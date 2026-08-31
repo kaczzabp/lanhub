@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAN Party Hub</title>
+  <meta name="description" content="Your local LAN party homepage — chat, votes, links, and more." />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+  <div id="app">
+
+    <div id="login-screen">
+      <div class="login-box">
+        <div class="corner-decor corner-tl"></div>
+        <div class="corner-decor corner-tr"></div>
+        <div class="corner-decor corner-bl"></div>
+        <div class="corner-decor corner-br"></div>
+
+        <div class="login-logo" data-i18n="login.logo">⌨ LANSITE</div>
+        <div class="login-sub" data-i18n="login.sub">// local network hub //</div>
+
+        <div class="login-tabs">
+          <div class="login-tab active" id="tab-guest" onclick="switchLoginTab('guest')" data-i18n="login.tab_guest">GUEST CODE</div>
+          <div class="login-tab" id="tab-admin" onclick="switchLoginTab('admin')" data-i18n="login.tab_host">HOST LOGIN</div>
+        </div>
+
+        <div id="login-guest-form">
+          <div class="form-group">
+            <label for="input-code" data-i18n="login.enter_code_label">ENTER YOUR CODE</label>
+            <input type="text" id="input-code" placeholder="e.g. ABC123" data-i18n-placeholder="login.code_placeholder" autocomplete="off" spellcheck="false"
+              style="font-family:var(--font-mono);font-size:1.2rem;letter-spacing:0.12em;text-transform:uppercase;" />
+          </div>
+          <button class="btn btn-primary w-full" id="btn-guest-login" onclick="doGuestLogin()" data-i18n="login.btn_connect">
+            ▶ CONNECT
+          </button>
+        </div>
+
+        <div id="login-admin-form" class="hidden">
+          <div class="form-group">
+            <label for="input-admin-pass" data-i18n="login.host_pass_label">HOST PASSWORD</label>
+            <input type="password" id="input-admin-pass" placeholder="Enter host password" data-i18n-placeholder="login.host_pass_placeholder" />
+          </div>
+          <button class="btn btn-accent2 w-full" onclick="doAdminLogin()" data-i18n="login.btn_host_login">
+            ⚙ HOST LOGIN
+          </button>
+        </div>
+
+        <div id="login-error"></div>
+      </div>
+    </div>
+
+    <header id="header" class="hidden">
+      <div id="header-logo">
+        ⌨ LANSITE <span data-i18n="header.logo_hub">// LAN HUB</span>
+      </div>
+
+      <div id="header-ip" title="Click to copy" data-i18n-title="header.copy_ip_title" onclick="copyIP()">
+        http://lan.local
+      </div>
+
+      <div class="header-spacer"></div>
+
+      <div id="header-clock">
+        <span class="date-part" id="clock-date"></span>
+        <span id="clock-time">00:00:00</span>
+      </div>
+
+      <div id="header-user"></div>
+      <button class="btn btn-sm" id="btn-admin-toggle" onclick="toggleAdmin()" style="display:none" data-i18n="header.admin_btn">⚙ ADMIN</button>
+      <button class="btn btn-sm" id="btn-logout" onclick="doLogout()" data-i18n="header.logout_btn">✕ LOGOUT</button>
+    </header>
+
+    <div id="announcement-bar" class="hidden">
+      <span class="ann-icon">📢</span>
+      <span class="ann-badge" data-i18n="announcement.badge">ANNOUNCEMENT</span>
+      <span class="ann-text" id="ann-text"></span>
+      <span class="ann-close" onclick="dismissAnnouncement()" title="Dismiss">✕</span>
+    </div>
+
+    <div id="main" class="hidden">
+
+      <div id="clock-mode-overlay" class="hidden">
+        <div class="clock-mode-box">
+          <div class="clock-mode-header">// LAN HUB CLOCK //</div>
+          <div id="clock-mode-time">00:00:00</div>
+          <div id="clock-mode-date"></div>
+          <div id="clock-mode-announcement" class="hidden">
+            <div class="clock-ann-badge">📢 ANNOUNCEMENT</div>
+            <div id="clock-ann-text"></div>
+          </div>
+          <div id="clock-mode-welcome" class="clock-mode-welcome">
+            WELCOME <span id="clock-welcome-user"></span>
+          </div>
+        </div>
+      </div>
+
+      <aside id="sidebar">
+        <div class="sidebar-section">
+          <h3 data-i18n="sidebar.online_now">Online Now</h3>
+          <div id="online-list">
+            <div class="text-muted text-sm" data-i18n="sidebar.no_one_yet">No one yet</div>
+          </div>
+        </div>
+      </aside>
+
+      <main id="content">
+
+        <div class="card" id="section-buttons">
+          <div class="card-header">
+            <span class="card-icon">🔗</span>
+            <h2 data-i18n="sections.links_title">LINKS &amp; DOWNLOADS</h2>
+          </div>
+          <div class="card-body">
+            <div id="buttons-bar">
+              <div class="text-muted text-sm" data-i18n="sections.no_links_yet">No links yet — host will add them.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="section-chat">
+          <div class="card-header">
+            <span class="card-icon">💬</span>
+            <h2 data-i18n="sections.chat_title">CHAT</h2>
+            <div class="card-actions">
+              <span id="chat-online-count" class="text-muted text-sm"></span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="chat-messages"></div>
+            <div id="chat-input-area">
+              <input type="text" id="chat-input" placeholder="Say something..." data-i18n-placeholder="sections.chat_placeholder" maxlength="500"
+                onkeydown="if(event.key==='Enter')sendChat()" />
+              <button class="btn btn-primary" onclick="sendChat()" data-i18n="sections.btn_send">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="section-polls">
+          <div class="card-header">
+            <span class="card-icon">🗳</span>
+            <h2 data-i18n="sections.polls_title">POLLS</h2>
+          </div>
+          <div class="card-body">
+            <div id="polls-list">
+              <div class="empty-state"><span class="empty-icon">🗳</span><span data-i18n="sections.no_polls_yet">No polls yet.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="section-checklist">
+          <div class="card-header">
+            <span class="card-icon">☑</span>
+            <h2 data-i18n="sections.checklist_title">CHECKLIST</h2>
+            <div class="card-actions">
+              <button class="btn btn-sm btn-secondary" id="btn-toggle-matrix" onclick="toggleMatrix()"
+                style="display:none" data-i18n="sections.matrix_view_btn">
+                📊 Matrix View
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="checklist-view">
+              <div class="empty-state"><span class="empty-icon">☑</span><span data-i18n="sections.no_checklist_yet">No checklist yet.</span></div>
+            </div>
+            <div id="matrix-view" class="hidden">
+              <div id="matrix-container"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="section-menu">
+          <div class="card-header">
+            <span class="card-icon">🍽</span>
+            <h2 data-i18n="sections.menu_title">MENU</h2>
+            <div class="card-actions" id="menu-card-actions"></div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div id="menu-widget">
+              <div class="empty-state"><span class="empty-icon">🍽</span><span data-i18n="sections.no_menu_yet">No menu yet.</span></div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      <aside id="admin-panel">
+        <h2 data-i18n="admin.title">⚙ ADMIN PANEL</h2>
+
+        <div class="admin-body">
+
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <span class="section-icon">🕒</span>
+              <span class="section-title" data-i18n="admin.clock_mode_title">Clock Mode</span>
+            </div>
+            <div class="admin-section-body">
+              <p class="text-muted" style="font-size:0.78rem;margin-bottom:0.75rem" data-i18n="admin.clock_mode_desc">
+                Show a giant clock and announcement on all connected screens.
+              </p>
+              <div class="admin-action-row">
+                <button class="btn btn-secondary btn-sm" id="btn-toggle-clockmode" onclick="toggleClockMode()" data-i18n="admin.btn_enable_clock_mode">
+                  ▶ Enable Clock Mode
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <span class="section-icon">📢</span>
+              <span class="section-title" data-i18n="admin.announcement_title">Announcement</span>
+            </div>
+            <div class="admin-section-body">
+              <div class="form-group">
+                <label data-i18n="admin.pin_msg_label">Pin a message to all guests</label>
+                <input type="text" id="admin-ann-text" placeholder="e.g. Pizza's here! 🍕" data-i18n-placeholder="admin.ann_placeholder" />
+              </div>
+              <div class="admin-action-row">
+                <button class="btn btn-primary btn-sm" onclick="postAnnouncement()" data-i18n="admin.btn_post">Post</button>
+                <button class="btn btn-secondary btn-sm" onclick="clearAnnouncement()" data-i18n="admin.btn_clear">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <span class="section-icon">🎟</span>
+              <span class="section-title" data-i18n="admin.guest_codes_title">Guest Codes</span>
+            </div>
+            <div class="admin-section-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label data-i18n="admin.name_label">Name *</label>
+                  <input type="text" id="gen-name" placeholder="e.g. ZeroKool" data-i18n-placeholder="admin.name_placeholder" />
+                </div>
+                <div class="form-group">
+                  <label data-i18n="admin.seat_label">Seat</label>
+                  <input type="text" id="gen-seat" placeholder="A3" data-i18n-placeholder="admin.seat_placeholder" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label data-i18n="admin.handle_label">Game Handle</label>
+                <input type="text" id="gen-handle" placeholder="xX_Player_Xx" data-i18n-placeholder="admin.handle_placeholder" />
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="generateCode()" data-i18n="admin.btn_gen_code">Generate Code</button>
+              <div id="gen-result" class="mt"></div>
+              <div id="codes-list" class="mt"></div>
+            </div>
+          </div>
+
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <span class="section-icon">🔗</span>
+              <span class="section-title" data-i18n="admin.links_title">Links &amp; Downloads</span>
+            </div>
+            <div class="admin-section-body">
+              <div class="form-group">
+                <label data-i18n="admin.label_label">Label</label>
+                <input type="text" id="btn-label" placeholder="e.g. Game Installer" data-i18n-placeholder="admin.label_placeholder" />
+              </div>
+              <div class="form-group">
+                <label data-i18n="admin.type_label">Type</label>
+                <select id="btn-type" onchange="toggleBtnType()">
+                  <option value="link" data-i18n="admin.type_link">Link (URL)</option>
+                  <option value="file" data-i18n="admin.type_file">File Upload</option>
+                </select>
+              </div>
+              <div class="form-group" id="btn-url-group">
+                <label data-i18n="admin.url_label">URL</label>
+                <input type="url" id="btn-url" placeholder="http://192.168.x.x/..." data-i18n-placeholder="admin.url_placeholder" />
+              </div>
+              <div class="form-group hidden" id="btn-file-group">
+                <label data-i18n="admin.file_label">File</label>
+                <input type="file" id="btn-file" />
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="addButton()" data-i18n="admin.btn_add_button">Add Button</button>
+              <div id="admin-btn-list" class="mt"></div>
+            </div>
+          </div>
+
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <span class="section-icon">🗳</span>
+              <span class="section-title" data-i18n="admin.create_poll_title">Create Poll</span>
+            </div>
+            <div class="admin-section-body">
+              <div class="form-group">
+                <label data-i18n="admin.question_label">Question</label>
+                <input type="text" id="poll-question" placeholder="e.g. Next game?" data-i18n-placeholder="admin.question_placeholder" />
+              </div>
+              <div class="form-group">
+                <label data-i18n="admin.options_label">Options (one per line)</label>
+                <textarea id="poll-options" placeholder="CS2&#10;Minecraft&#10;Age of Empires" data-i18n-placeholder="admin.options_placeholder" rows="4"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="createPoll()" data-i18n="admin.btn_create_poll">Create Poll</button>
+            </div>
+          </div>
+
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <span class="section-icon">☑</span>
+              <span class="section-title" data-i18n="admin.checklist_admin_title">Checklist</span>
+            </div>
+            <div class="admin-section-body">
+              <div class="form-group">
+                <label data-i18n="admin.cl_title_label">Title</label>
+                <input type="text" id="cl-title" placeholder="e.g. Food Order" data-i18n-placeholder="admin.cl_title_placeholder" />
+              </div>
+              <div class="form-group">
+                <label data-i18n="admin.cl_items_label">Items (one per line)</label>
+                <textarea id="cl-items" placeholder="Pizza&#10;Burger&#10;Fries" data-i18n-placeholder="admin.cl_items_placeholder" rows="5"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="createChecklist()" data-i18n="admin.btn_publish_checklist">Publish Checklist</button>
+              <p class="text-muted mt" style="font-size:0.75rem" data-i18n="admin.cl_warning">
+                Publishing replaces the current checklist and clears all ticks.
+              </p>
+            </div>
+          </div>
+
+          <div class="admin-section">
+            <div class="admin-section-header">
+              <span class="section-icon">🍽</span>
+              <span class="section-title" data-i18n="admin.menu_builder_title">Food Menu Builder</span>
+              <div id="admin-menu-header-actions" style="display:flex;gap:0.4rem"></div>
+            </div>
+            <div class="admin-section-body" id="admin-menu-body">
+              <p class="text-muted" style="font-size:0.78rem;margin-bottom:0.75rem" data-i18n="admin.menu_builder_desc">
+                Build a paginated menu. Each section = one book page.
+              </p>
+              <div class="form-group">
+                <label data-i18n="admin.menu_title_label">Menu Title</label>
+                <input type="text" id="menu-title" placeholder="e.g. Sarki Csárda" data-i18n-placeholder="admin.menu_title_placeholder" />
+              </div>
+              <div id="menu-sections-builder"></div>
+              <button class="btn btn-secondary btn-sm" onclick="addMenuSection()" style="margin-bottom:0.75rem" data-i18n="admin.btn_add_section">+ Add Section</button>
+              <div class="admin-action-row">
+                <button class="btn btn-primary btn-sm" onclick="publishMenu()" data-i18n="admin.btn_publish_menu">🍽 Publish Menu</button>
+              </div>
+              <div id="admin-menu-existing" class="mt"></div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+    </div>
+
+  </div>
+
+  <script src="/vendor/socket.io.min.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+
+</html>

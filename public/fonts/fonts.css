@@ -1,0 +1,44 @@
+/* 
+  Local font declarations.
+  Fonts are served from the /fonts/ directory.
+  If not present, the CSS stack falls back gracefully.
+  
+  To get fonts:
+  - Share Tech Mono: https://fonts.google.com/specimen/Share+Tech+Mono
+  - Inter: https://fonts.google.com/specimen/Inter
+  
+  Place downloaded .woff2 files in public/fonts/ and uncomment below.
+  The app works with system-font fallbacks even without these files.
+*/
+
+/* @font-face {
+  font-family: 'Share Tech Mono';
+  src: url('ShareTechMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('Inter-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('Inter-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('Inter-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+} */
