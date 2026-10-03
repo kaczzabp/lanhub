@@ -1,0 +1,100 @@
+{
+  "app": {
+    "title": "LAN Party Hub",
+    "meta_desc": "Your local LAN party homepage — chat, votes, links, and more."
+  },
+  "login": {
+    "logo": "⌨ LANHUB",
+    "sub": "// local network hub //",
+    "tab_guest": "GUEST CODE",
+    "tab_admin": "HOST LOGIN",
+    "enter_code_label": "ENTER YOUR CODE",
+    "code_placeholder": "e.g. ABC123",
+    "btn_connect": "▶ CONNECT",
+    "host_pass_label": "HOST PASSWORD",
+    "host_pass_placeholder": "Enter host password",
+    "btn_host_login": "⚙ HOST LOGIN"
+  },
+  "header": {
+    "logo_hub": "// LAN HUB",
+    "copy_ip_title": "Click to copy",
+    "admin_btn": "⚙ ADMIN",
+    "logout_btn": "✕ LOGOUT",
+    "logged_in_as": "Logged in as"
+  },
+  "announcement": {
+    "badge": "ANNOUNCEMENT"
+  },
+  "sidebar": {
+    "online_now": "Online Now",
+    "no_one_yet": "No one yet"
+  },
+  "sections": {
+    "links_title": "LINKS & DOWNLOADS",
+    "no_links_yet": "No links yet — host will add them.",
+    "chat_title": "CHAT",
+    "chat_placeholder": "Say something...",
+    "btn_send": "Send",
+    "polls_title": "POLLS",
+    "no_polls_yet": "No polls yet.",
+    "checklist_title": "CHECKLIST",
+    "no_checklist_yet": "No checklist yet.",
+    "matrix_view_btn": "📊 Matrix View",
+    "menu_title": "MENU",
+    "no_menu_yet": "No menu yet."
+  },
+  "clock_mode": {
+    "header": "// LAN HUB CLOCK //",
+    "announcement_badge": "📢 ANNOUNCEMENT",
+    "welcome": "WELCOME"
+  },
+  "admin": {
+    "title": "⚙ ADMIN PANEL",
+    "clock_mode_title": "Clock Mode",
+    "clock_mode_desc": "Show a giant clock and announcement on all connected screens.",
+    "btn_enable_clock_mode": "▶ Enable Clock Mode",
+    "btn_disable_clock_mode": "■ Disable Clock Mode",
+    "announcement_title": "Announcement",
+    "pin_msg_label": "Pin a message to all guests",
+    "ann_placeholder": "e.g. Pizza's here! 🍕",
+    "btn_post": "Post",
+    "btn_clear": "Clear",
+    "guest_codes_title": "Guest Codes",
+    "name_label": "Name *",
+    "seat_label": "Seat",
+    "handle_label": "Game Handle",
+    "name_placeholder": "e.g. ZeroKool",
+    "seat_placeholder": "A3",
+    "handle_placeholder": "xX_Player_Xx",
+    "btn_gen_code": "Generate Code",
+    "links_title": "Links & Downloads",
+    "label_label": "Label",
+    "label_placeholder": "e.g. Game Installer",
+    "type_label": "Type",
+    "type_link": "Link (URL)",
+    "type_file": "File Upload",
+    "url_label": "URL",
+    "url_placeholder": "http://192.168.x.x/...",
+    "file_label": "File",
+    "btn_add_button": "Add Button",
+    "create_poll_title": "Create Poll",
+    "question_label": "Question",
+    "question_placeholder": "e.g. Next game?",
+    "options_label": "Options (one per line)",
+    "options_placeholder": "CS2\nMinecraft\nAge of Empires",
+    "btn_create_poll": "Create Poll",
+    "checklist_admin_title": "Checklist",
+    "cl_title_label": "Title",
+    "cl_title_placeholder": "e.g. Food Order",
+    "cl_items_label": "Items (one per line)",
+    "cl_items_placeholder": "Pizza\nBurger\nFries",
+    "btn_publish_checklist": "Publish Checklist",
+    "cl_warning": "Publishing replaces the current checklist and clears all ticks.",
+    "menu_builder_title": "Food Menu Builder",
+    "menu_builder_desc": "Build a paginated menu. Each section = one book page.",
+    "menu_title_label": "Menu Title",
+    "menu_title_placeholder": "e.g. Sarki Csárda",
+    "btn_add_section": "+ Add Section",
+    "btn_publish_menu": "🍽 Publish Menu"
+  }
+}

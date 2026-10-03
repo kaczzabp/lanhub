@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 // Page not found // Lanhub</title>
+<meta name="description" content="This page does not exist. Return to the Lanhub homepage.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0f;
+    --border: #2a2a38;
+    --accent: #f0a500;
+    --text: #e8e8ec;
+    --muted: #7a7a90;
+    --mono: 'Share Tech Mono', 'Courier New', monospace;
+    --body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--body); line-height: 1.65; }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.08) 3px,
+      rgba(0,0,0,0.08) 4px
+    );
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 96px 24px 64px; }
+  .code { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+  h1 { font-family: var(--mono); font-size: 2rem; color: var(--accent); margin-bottom: 12px; }
+  p { color: var(--muted); margin-bottom: 24px; }
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    text-decoration: none;
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .btn:hover { background: #c07800; }
+  footer { border-top: 1px solid var(--border); margin-top: 64px; padding-top: 24px; font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="code">[ERR] 404</p>
+    <h1>THIS PAGE DOES NOT EXIST.</h1>
+    <p>The link may be broken or the page was removed. Go back to the Lanhub homepage.</p>
+    <a class="btn" href="https://kaczzabp.github.io/lanhub/">&gt; BACK TO HOME</a>
+    <footer>&copy; <span id="year">2026</span> LANHUB // MIT LICENSE</footer>
+  </div>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

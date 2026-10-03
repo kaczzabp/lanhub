@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lanhub // Self-Hosted LAN Party Hub</title>
+<meta name="description" content="Lanhub is a self-hosted hub for LAN parties. One page for everyone on the network: chat, polls, checklist, food menu, downloads, and announcements.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0f;
+    --surface: #13131a;
+    --card: #18181f;
+    --card2: #1e1e28;
+    --border: #2a2a38;
+    --accent: #f0a500;
+    --accent-dim: #c07800;
+    --accent2: #00b4d8;
+    --text: #e8e8ec;
+    --muted: #7a7a90;
+    --dim: #4a4a60;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --mono: 'Share Tech Mono', 'Courier New', monospace;
+    --body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --radius: 4px;
+    --radius-lg: 8px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.65;
+    font-size: 16px;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.08) 3px,
+      rgba(0,0,0,0.08) 4px
+    );
+  }
+  a { color: var(--accent2); }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 2px solid var(--accent);
+  }
+  .nav {
+    max-width: 1020px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .logo { font-family: var(--mono); font-size: 1.2rem; color: var(--accent); text-decoration: none; white-space: nowrap; }
+  .logo span { color: var(--muted); font-size: 0.75rem; }
+  .nav-links { display: flex; gap: 20px; list-style: none; margin-left: auto; }
+  .nav-links a { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+  .nav-links a:hover { color: var(--text); }
+
+  .strip {
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+    padding: 8px 16px;
+  }
+
+  main { padding-bottom: 72px; }
+
+  .hero { padding: 72px 0 16px; max-width: 720px; }
+  .eyebrow { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); margin-bottom: 16px; }
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(1.9rem, 4.5vw, 2.9rem);
+    line-height: 1.15;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    background: var(--accent);
+    vertical-align: -0.12em;
+    margin-left: 6px;
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .lede { color: var(--muted); font-size: 1.02rem; margin-bottom: 28px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .meta { font-family: var(--mono); font-size: 0.78rem; color: var(--dim); }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
+  .btn-primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+  .btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn-secondary:hover { border-color: var(--muted); background: var(--card2); }
+
+  section { padding-top: 56px; }
+  .section-head { margin-bottom: 24px; }
+  .section-head h2 { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 6px; }
+  .section-head p { color: var(--muted); font-size: 0.92rem; }
+
+  /* Zigzag screenshot rows: different layout from the stacked cards */
+  .shot-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 32px;
+    align-items: center;
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+  }
+  .shot-row:last-child { border-bottom: 1px solid var(--border); }
+  .shot-row.flip { grid-template-columns: 1fr 1.2fr; }
+  .shot-row.flip figure { order: 2; }
+  .shot-row figure { margin: 0; }
+  .shot-row img { width: 100%; display: block; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+  .shot-row h3 { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.05em; color: var(--text); margin-bottom: 8px; }
+  .shot-row h3 .tag { color: var(--accent); }
+  .shot-row p { font-size: 0.9rem; color: var(--muted); }
+
+  /* Two column guest/host split */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .card-header {
+    background: var(--card2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .card-header .glyph { color: var(--accent); font-family: var(--mono); font-size: 1rem; }
+  .card-header h2 { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.06em; color: var(--accent); }
+  .card-body { padding: 20px; }
+  .card-body > p.sub { color: var(--muted); font-size: 0.92rem; margin-bottom: 12px; }
+  ul.feat { list-style: none; }
+  ul.feat li { font-size: 0.88rem; color: var(--muted); padding: 8px 0 8px 24px; border-top: 1px solid var(--border); position: relative; }
+  ul.feat li:first-child { border-top: none; }
+  ul.feat li::before { content: '>'; position: absolute; left: 4px; color: var(--accent); font-family: var(--mono); }
+  ul.feat li strong { color: var(--text); font-weight: 600; }
+
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    overflow-x: auto;
+    margin: 10px 0 18px;
+  }
+  code { font-family: var(--mono); }
+  .cmd-row { display: flex; align-items: flex-start; gap: 12px; }
+  .cmd-row pre { flex: 1; }
+  .copy-btn {
+    flex-shrink: 0;
+    margin-top: 10px;
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .copy-btn:hover { border-color: var(--muted); background: var(--card2); }
+  .status { font-family: var(--mono); font-size: 0.8rem; min-height: 22px; margin: -6px 0 14px; }
+  .status.ok { color: var(--success); }
+  .status.err { color: var(--danger); }
+  .note { font-size: 0.88rem; color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  th { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--muted); }
+  td code { background: var(--surface); border: 1px solid var(--border); padding: 1px 6px; border-radius: var(--radius); font-size: 0.8rem; color: var(--accent2); }
+
+  footer { border-top: 1px solid var(--border); padding: 28px 0 44px; background: var(--surface); }
+  .footer-inner { max-width: 1020px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .footer-inner p, .footer-inner a { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); text-decoration: none; }
+  .footer-inner a:hover { color: var(--text); }
+  .footer-links { display: flex; gap: 16px; }
+
+  @media (max-width: 760px) {
+    .shot-row, .shot-row.flip { grid-template-columns: 1fr; }
+    .shot-row.flip figure { order: 0; }
+    .duo { grid-template-columns: 1fr; }
+    .nav-links li:not(:last-child) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a class="logo" href="./">&gt; LANHUB <span>// LAN PARTY HUB</span></a>
+    <ul class="nav-links">
+      <li><a href="#shots">SHOTS</a></li>
+      <li><a href="#features">FEATURES</a></li>
+      <li><a href="#start">START</a></li>
+      <li><a href="https://github.com/kaczzabp/lanhub">GITHUB</a></li>
+    </ul>
+  </nav>
+</header>
+<div class="strip">SELF-HOSTED // NODE.JS // NO INTERNET NEEDED // MIT LICENSE</div>
+
+<main>
+  <div class="wrap">
+
+    <div class="hero">
+      <div>
+        <p class="eyebrow">&gt; RUN IT ON ONE MACHINE // EVERYONE JOINS IN</p>
+        <h1>ONE PAGE FOR THE WHOLE LAN PARTY.<span class="cursor"></span></h1>
+        <p class="lede">Lanhub is a self-hosted hub you run on one machine. Everyone on the network opens the same page: live chat, polls, a shared checklist, a food menu with ordering, download links, and announcements. No internet, no accounts, no cloud.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/kaczzabp/lanhub">&gt; GET LANHUB ON GITHUB</a>
+          <a class="btn btn-secondary" href="#start">QUICK START</a>
+        </div>
+        <p class="meta">NODE.JS 18+ // SOURCE CODE ON GITHUB</p>
+      </div>
+    </div>
+
+    <section id="shots">
+      <div class="section-head">
+        <h2>// SCREENSHOTS</h2>
+        <p>Three views of the running hub: login, console, and host controls.</p>
+      </div>
+
+      <div class="shot-row">
+        <figure><img src="pictures/login.png" alt="Lanhub login screen with guest code and host login tabs" loading="lazy"></figure>
+        <div>
+          <h3><span class="tag">[01]</span> GUEST LOGIN</h3>
+          <p>Guests join with a short code the host hands out. No account, no email, nothing to install. Hosts sign in on a separate tab with the server password.</p>
+        </div>
+      </div>
+
+      <div class="shot-row flip">
+        <figure><img src="pictures/terminal.png" alt="Lanhub server console showing LAN address, admin password, and online counter" loading="lazy"></figure>
+        <div>
+          <h3><span class="tag">[02]</span> LIVE CONSOLE</h3>
+          <p>The terminal shows everything the host needs: the LAN address to share, the generated admin password, and a live counter of who is online.</p>
+        </div>
+      </div>
+
+      <div class="shot-row">
+        <figure><img src="pictures/admin-sidebar.png" alt="Lanhub admin panel with clock mode, announcements, guest codes, and links" loading="lazy"></figure>
+        <div>
+          <h3><span class="tag">[03]</span> HOST ADMIN PANEL</h3>
+          <p>The host panel stays invisible to guests. Generate codes, pin announcements, build polls and the food menu, share links or 2 GB uploads, and push a giant clock to every screen.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="section-head">
+        <h2>// FEATURES</h2>
+        <p>Two sides of the same page: what guests get and what the host controls.</p>
+      </div>
+      <div class="duo">
+        <div class="card">
+          <div class="card-header"><span class="glyph">◉</span><h2>FOR GUESTS</h2></div>
+          <div class="card-body">
+            <ul class="feat">
+              <li><strong>Guest codes.</strong> Log in with a short code, no account needed.</li>
+              <li><strong>Live chat.</strong> Real-time group chat with history.</li>
+              <li><strong>Polls.</strong> One vote per person, results update live.</li>
+              <li><strong>Checklist.</strong> A shared list everyone ticks off, plus a matrix view of who ticked what.</li>
+              <li><strong>Links and downloads.</strong> Installers, drivers, and pinned URLs in one place.</li>
+              <li><strong>Food menu and ordering.</strong> Browse the menu and order; the host sees every order with totals.</li>
+              <li><strong>Announcements.</strong> A pinned banner across the top, dismissible per person.</li>
+              <li><strong>Online now.</strong> The sidebar shows who is connected.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="glyph">#</span><h2>FOR THE HOST</h2></div>
+          <div class="card-body">
+            <ul class="feat">
+              <li><strong>Admin panel.</strong> Separate password, never visible to guests.</li>
+              <li><strong>Guest codes.</strong> Generate codes with seat and game handle, revoke them, see who is online.</li>
+              <li><strong>Poll management.</strong> Create, close, reopen, and delete polls.</li>
+              <li><strong>Menu builder.</strong> Sections and prices, open and closed ordering, per-person totals.</li>
+              <li><strong>Clock mode.</strong> Turn every screen into a giant clock with the announcement. Made for the projector.</li>
+              <li><strong>Section toggles.</strong> Hide any section from everyone with one click.</li>
+              <li><strong>Links and uploads.</strong> Pin URLs or upload files up to 2 GB each.</li>
+              <li><strong>Hardened by default.</strong> Rate-limited logins and sessions that expire after 24 hours.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="start">
+      <div class="section-head">
+        <h2>// QUICK START</h2>
+        <p>Requirements: Node.js 18 or newer. On first run the admin password is generated and printed to the console.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="glyph">&gt;</span><h2>RUN IT</h2></div>
+        <div class="card-body">
+          <div class="cmd-row">
+            <pre><code id="start-cmd">git clone https://github.com/kaczzabp/lanhub.git
+cd lanhub
+npm install
+node server.js</code></pre>
+            <button class="copy-btn" id="copy-btn" type="button">COPY</button>
+          </div>
+          <p class="status" id="copy-status" role="status" aria-live="polite"></p>
+          <p class="note">First party checklist: log in under HOST LOGIN with the printed password, open the admin panel, generate a code per person, and hand them out. Guests enter their code and they are in.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="access">
+      <div class="section-head">
+        <h2>// ACCESSING THE HUB</h2>
+        <p>Guests use whichever address works on their device. Plain IP always works.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="glyph">≡</span><h2>ADDRESSES</h2></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>URL</th><th>HOW IT RESOLVES</th><th>WORKS ON</th></tr></thead>
+            <tbody>
+              <tr><td><code>http://lan.local</code></td><td>mDNS</td><td>Windows 10/11, macOS, iOS, Linux</td></tr>
+              <tr><td><code>http://lan</code></td><td>LLMNR</td><td>Windows only</td></tr>
+              <tr><td><code>http://&lt;server-ip&gt;</code></td><td>Plain IP</td><td>Everything, nothing to configure</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="config">
+      <div class="section-head">
+        <h2>// CONFIGURATION</h2>
+        <p>All settings are optional. Copy <code>.env.example</code> to <code>.env</code> and change what you need.</p>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="glyph">=</span><h2>ENV DEFAULTS</h2></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>VARIABLE</th><th>DEFAULT</th><th>DESCRIPTION</th></tr></thead>
+            <tbody>
+              <tr><td><code>PORT</code></td><td><code>80</code></td><td>HTTP port</td></tr>
+              <tr><td><code>HTTPS_PORT</code></td><td><code>443</code></td><td>HTTPS port, served alongside HTTP</td></tr>
+              <tr><td><code>ADMIN_PASSWORD</code></td><td>random, printed once</td><td>Password for the host login</td></tr>
+              <tr><td><code>MDNS_NAME</code></td><td><code>lan</code></td><td>Hostname advertised as &lt;name&gt;.local</td></tr>
+              <tr><td><code>DISCORD_WEBHOOK_URL</code></td><td>unset</td><td>Optional Discord event log</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="support">
+      <div class="section-head">
+        <h2>// SUPPORT</h2>
+        <p>Lanhub has no support phone line or email address. The fastest way to get help or report a bug is GitHub Issues. Keep it on the LAN: it is not designed for public internet exposure.</p>
+      </div>
+      <div class="actions">
+        <a class="btn btn-secondary" href="https://github.com/kaczzabp/lanhub/issues">OPEN AN ISSUE</a>
+        <a class="btn btn-secondary" href="https://github.com/kaczzabp/lanhub/blob/main/LICENSE">READ THE MIT LICENSE</a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p>&copy; <span id="year">2026</span> LANHUB // MIT LICENSE</p>
+    <div class="footer-links">
+      <a href="https://github.com/kaczzabp/lanhub">GITHUB</a>
+      <a href="https://github.com/kaczzabp/lanhub/issues">ISSUES</a>
+      <a href="https://github.com/kaczzabp/lanhub/blob/main/LICENSE">LICENSE</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  var copyBtn = document.getElementById('copy-btn');
+  var copyStatus = document.getElementById('copy-status');
+  copyBtn.addEventListener('click', function () {
+    var text = document.getElementById('start-cmd').innerText;
+    copyStatus.className = 'status';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        copyStatus.textContent = '[OK] Copied to clipboard.';
+        copyStatus.classList.add('ok');
+      }, function () {
+        copyStatus.textContent = '[ERR] Copy failed. Select the text and copy it manually.';
+        copyStatus.classList.add('err');
+      });
+    } else {
+      copyStatus.textContent = '[ERR] Copy is not supported in this browser. Select the text and copy it manually.';
+      copyStatus.classList.add('err');
+    }
+  });
+</script>
+
+</body>
+</html>
